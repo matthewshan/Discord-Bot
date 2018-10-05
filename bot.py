@@ -6,9 +6,14 @@ import random
 from poll import Poll
 
 class Bot(discord.Client):
+    #Member Functions
     polls = []
 
-    def getToken(self, filename):
+    #Helper Methods
+    '''
+    # Method to open text a return it in the form of a String
+    '''
+    def get_token(self, filename):
         try:
             tokenFile = open('tokens/' + filename, 'r')
             token = tokenFile.read().rstrip()
@@ -18,9 +23,10 @@ class Bot(discord.Client):
             exit(1)
         return token
 
+    #Core Methods#
     def reddit(self,sub):
             reddit = praw.Reddit(client_id='Lz8v84RHrHl_Jw',
-                                 client_secret=self.getToken("reddit.txt"),
+                                 client_secret=self.get_token("reddit.txt"),
                                  user_agent='Discord Bot')
             submission = random.choice(list(reddit.subreddit(sub).hot(limit=50)))
             if(not submission.over_18):
@@ -28,9 +34,9 @@ class Bot(discord.Client):
             else:
                 return ('Uh oh... It looks like the a randomly selected post was Not Safe For Work. It will not be posted on this chat')
 
-    def getWeather(self, zip):
+    def get_weather(self, zip):
         print('Accessing OpenWeatherMapAPI with token')
-        weatherToken = self.getToken('weather.txt')
+        weatherToken = self.get_token('weather.txt')
         weatherAddress = 'http://api.openweathermap.org/data/2.5/forecast?zip=' + str(
             zip) + ',us&APPID=' + weatherToken
 
@@ -51,7 +57,8 @@ class Bot(discord.Client):
                 zip) + ':\n```The temperature is ' + weatherTemp +
                 ' degrees fahrenheit\nCurrently the weather status is '
                 + weatherStatus + '```')
-
+                
+    #Discord API Methods#
     async def on_message(self, message):
         #Note. Await stops other processes until this one is done
 
@@ -74,37 +81,35 @@ class Bot(discord.Client):
         
         elif arg[0] == "!weather":
             if (len(arg) == 1):
-                await self.send_message(message.channel, self.getWeather(49401))
+                await self.send_message(message.channel, self.get_weather(49401))
             elif (len(arg) == 2):
                 print(arg[1])
-                await self.send_message(message.channel, self.getWeather(arg[1]))
+                await self.send_message(message.channel, self.get_weather(arg[1]))
         
         elif arg[0] == "!poll":
             #Users can create a poll. The bot will keep track of the amount of votes and resend messages as they are
             #nudged
             if len(arg) < 2:
                 await self.send_message(message.channel, "Incorrect command usage...")
+
             if arg[1] == "new":
-                msg = message.content.split("\"")
-                self.polls.append(Poll(msg[1],arg[2:len(msg)-1]))
+                self.polls.append(Poll(arg[2:len(msg)-1]))
                 print(self.polls[0])
+
+            elif arg[1] == "add":
+                self.polls.add_answers(arg[2:len(msg)-1])
+
             elif arg[1] == "end":
                 print ('End Poll')
+
             elif arg[1] == "edit":
                 print('Edit Poll')
+
             elif arg[1] == "nudge":
                 print('Nudge')
 
-
-
-    # async def on_typing(self, channel, user, when):
-    #     if user.nick:
-    #         name = user.nick
-    #     else:
-    #         name = user.name
-    #     msg = 'Hey ' + name + ' I see you typin\' there. :eyes:'
-    #     await self.send_message(channel, msg)
-
+            elif arg[1] == "help":
+                return ''
 
     async def on_reaction_add(self, reaction, user):
         print('reaction')
