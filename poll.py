@@ -15,4 +15,8 @@ class Poll():
         if len(self.answers) >= 26:
             raise IndexError('There are already 26 answers!')
         self.answers.append(input)
-0
+    
+    def print_poll(self):
+        msg = question + '\n'
+        for s in len(answers):
+            msg.append(str('\t' + s))

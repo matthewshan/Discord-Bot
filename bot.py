@@ -52,22 +52,17 @@ class Bot(discord.Client):
                 ' degrees fahrenheit\nCurrently the weather status is '
                 + weatherStatus + '```')
 
-    async def on_ready(self):
-        print('Logged on as {0}!'.format(self.user))
-
-
-
     async def on_message(self, message):
         #Note. Await stops other processes until this one is done
 
-        print('Message from {0.author}: {0.content} from {0.channel}'.format(message))
+        #print('Message from {0.author}: {0.content} from {0.channel}'.format(message))
         if message.author == self.user:
                 return
 
         arg = []
         arg = message.content.split(" ")
 
-        if len(arg) == "!reddit":
+        if arg[0] == "!reddit":
             if len(arg) > 2: #
                 await self.send_message(message.channel,"Incorrect command usage.\nExample: `!reddit [*Subreddit*]`")
             elif len(arg) == 1:
@@ -76,12 +71,14 @@ class Bot(discord.Client):
             print("Retrieving post from /r/" + arg[1])
 
             await self.send_message(message.channel,self.reddit(arg[1]))
+        
         elif arg[0] == "!weather":
             if (len(arg) == 1):
                 await self.send_message(message.channel, self.getWeather(49401))
             elif (len(arg) == 2):
                 print(arg[1])
                 await self.send_message(message.channel, self.getWeather(arg[1]))
+        
         elif arg[0] == "!poll":
             #Users can create a poll. The bot will keep track of the amount of votes and resend messages as they are
             #nudged
@@ -111,3 +108,7 @@ class Bot(discord.Client):
 
     async def on_reaction_add(self, reaction, user):
         print('reaction')
+
+    async def on_ready(self):
+        print('Logged on as {0}!'.format(self.user))
+
