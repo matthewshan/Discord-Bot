@@ -6,8 +6,7 @@ import random
 from poll import Poll
 
 class Bot(discord.Client):
-    #Member Functions
-    polls = []
+    polls = {}
 
     #Helper Methods
     '''
@@ -93,11 +92,13 @@ class Bot(discord.Client):
                 await self.send_message(message.channel, "Incorrect command usage...")
 
             if arg[1] == "new":
-                self.polls.append(Poll(arg[2:len(msg)-1]))
-                print(self.polls[0])
+                self.polls.update({message.channel : Poll(arg[2:len(msg)-1]}))
+                print(self.polls[message.channel])
 
             elif arg[1] == "add":
                 self.polls.add_answers(arg[2:len(msg)-1])
+
+            elig
 
             elif arg[1] == "end":
                 print ('End Poll')
