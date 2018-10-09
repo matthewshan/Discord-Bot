@@ -22,6 +22,9 @@ class Bot(discord.Client):
             exit(1)
         return token
 
+    def get_poll(self, input):
+        return polls[input]
+
     #Core Methods#
     def reddit(self,sub):
             reddit = praw.Reddit(client_id='Lz8v84RHrHl_Jw',
@@ -86,22 +89,21 @@ class Bot(discord.Client):
                 await self.send_message(message.channel, self.get_weather(arg[1]))
         
         elif arg[0] == "!poll":
-            #Users can create a poll. The bot will keep track of the amount of votes and resend messages as they are
-            #nudged
-            if len(arg) < 2:
+            #arg[1] is the command
+            #arg[2] is typically the name of the poll
+            #arg[3] and up are typically areguments for the 
+            if len(arg) < 3:
                 await self.send_message(message.channel, "Incorrect command usage...")
 
             if arg[1] == "new":
-                self.polls.update({message.channel : Poll(arg[2:len(msg)-1]}))
-                print(self.polls[message.channel])
+                self.polls.update({arg[2] : Poll(str(arg[3:len(message.content)-1]), message.channel) })
+                print(self.polls[message.channel])            
 
             elif arg[1] == "add":
-                self.polls.add_answers(arg[2:len(msg)-1])
-
-            elig
-
+                self.polls[arg[2]].add_answers(str(arg[2:len(message.content)-1]))]]
+                
             elif arg[1] == "end":
-                print ('End Poll')
+                self.polls[arg[2]].active = False
 
             elif arg[1] == "edit":
                 print('Edit Poll')
