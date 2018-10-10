@@ -90,32 +90,44 @@ class Bot(discord.Client):
         
         elif arg[0] == "!poll":
             #arg[1] is the command
-            #arg[2] is typically the name of the poll
-            #arg[3] and up are typically areguments for the 
-            if len(arg) < 3:
+            #arg[2] and up are typically areguments for the operation
+            #TODO Delete user commands after input
+            if len(arg) < 2:
                 await self.send_message(message.channel, "Incorrect command usage...")
+            else:                 
+                if arg[1] == "new": #TODO: Check if a poll is active or not
+                    name = message.channel.id
+                    question = " ".join(arg[2:len(message.content)-1])
+                    print(arg[2:len(message.content)-1])
+                    print(question)
+                    self.polls.update({name:Poll(question, message.channel.id)})
+                    print(self.polls[name])       
+                else:  
+                    try:
+                        selected = self.polls[message.channel.id]
+                    except TypeError:
+                        await self.send_message(message.channel, "That poll does not exist")
 
-            if arg[1] == "new":
-                self.polls.update({arg[2] : Poll(str(arg[3:len(message.content)-1]), message.channel) })
-                print(self.polls[message.channel])            
+                    if arg[1] == "add":
+                        answer = " ".join(arg[2:len(message.content)-1])
+                        selected.add_answer(answer)
+                        
+                    elif arg[1] == "end":
+                        selected.active = False
 
-            elif arg[1] == "add":
-                self.polls[arg[2]].add_answers(str(arg[2:len(message.content)-1]))]]
+                    elif arg[1] == "vote":
+                        selected.vote(arg[2]) #TODO Error handling on this
+
+                    elif arg[1] == "nudge": #TODO Delete old nudges
+                        await self.send_message(message.channel, selected.print_poll())
+
+                    elif arg[1] == "help": #TODO Needs a help menu
+                        return ''
+
                 
-            elif arg[1] == "end":
-                self.polls[arg[2]].active = False
-
-            elif arg[1] == "edit":
-                print('Edit Poll')
-
-            elif arg[1] == "nudge":
-                print('Nudge')
-
-            elif arg[1] == "help":
-                return ''
 
     async def on_reaction_add(self, reaction, user):
-        print('reaction')
+        print('reaction') #TODO Reaction for voting!
 
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))

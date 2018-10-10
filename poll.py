@@ -1,13 +1,13 @@
 class Poll():
     question = ''
-    answers = []
-    id = ''
+    answers = [] #TODO Change this into a dictionary with votes 
+    channel = ''
     active = True
 
     def __init__(self, q, i):
         self.question = q
         self.answers = []
-        self.id = i
+        self.channel = i
 
     def add_answer(self, input):
         if not self.active:
@@ -20,8 +20,16 @@ class Poll():
         self.id = input
     
     def print_poll(self):
-        msg = self.question + '\n'
-        for s in len(self.answers):
-            msg.append(str('\t' + s))
+        msg = '**' + self.question + '**\n'
+        for s in self.answers:
+            msg = msg + str('\t' + s + '\n')
 
         return msg
+
+    def vote(self, c):
+        c = c.upper()
+        if instanceof(str) and c == 1 and ord(c) >= 65 and ord(c) <= 90:
+            return "Okay" #TODO After changing the ansers array to a dict, add a vote
+        return "Bad" 
+
+    #TODO Save polls method
