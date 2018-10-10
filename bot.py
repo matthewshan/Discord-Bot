@@ -98,8 +98,6 @@ class Bot(discord.Client):
                 if arg[1] == "new": #TODO: Check if a poll is active or not
                     name = message.channel.id
                     question = " ".join(arg[2:len(message.content)-1])
-                    print(arg[2:len(message.content)-1])
-                    print(question)
                     self.polls.update({name:Poll(question, message.channel.id)})
                     print(self.polls[name])       
                 else:  
