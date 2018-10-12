@@ -91,36 +91,36 @@ class Bot(discord.Client):
         elif arg[0] == "!poll":
             #arg[1] is the command
             #arg[2] and up are typically areguments for the operation
-            #TODO Delete user commands after input
+            #TODO Delete user commands after input, easy nudging when there is no arguments, suggestions when things go wrong
+
             if len(arg) < 2:
                 await self.send_message(message.channel, "Incorrect command usage...")
             else:                 
                 if arg[1] == "new": #TODO: Check if a poll is active or not
-                    name = message.channel.id
                     question = " ".join(arg[2:len(message.content)-1])
-                    self.polls.update({name:Poll(question, message.channel.id)})
-                    print(self.polls[name])       
+                    self.polls.update({message.channel.id:Poll(question, message.channel.id)})     
                 else:  
                     try:
                         selected = self.polls[message.channel.id]
                     except TypeError:
                         await self.send_message(message.channel, "That poll does not exist")
 
-                    if arg[1] == "add":
+                    if arg[1] == "add" and selected.active == True:
                         answer = " ".join(arg[2:len(message.content)-1])
-                        selected.add_answer(answer)
-                        
+                        try:
+                            selected.add_answer(answer)
+                        except IndexError:
+                            await self.send_message(message.channel, "Max answers reached! No more answers can be added!")
+                       
                     elif arg[1] == "end":
                         selected.active = False
 
                     elif arg[1] == "vote":
                         selected.vote(arg[2]) #TODO Error handling on this
 
-                    elif arg[1] == "nudge": #TODO Delete old nudges
-                        await self.send_message(message.channel, selected.print_poll())
-
                     elif arg[1] == "help": #TODO Needs a help menu
                         return ''
+                    await self.send_message(message.channel, selected.print_poll())
 
                 
 
@@ -129,4 +129,3 @@ class Bot(discord.Client):
 
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
-

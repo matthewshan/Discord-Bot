@@ -12,18 +12,21 @@ class Poll():
     active = True 
 
     #This is the ASCII char before A
-    track = '@' 
+    track = 96
+
+    #This is the message ID
+    id = None #TODO Unique Voting by channel
 
 
     '''
     Constructor for the poll which takes question and channelID 
 
     @param q is the new self.question
-    @param i is the new self.channel
+    @param c is the new self.channel
     '''
-    def __init__(self, q, i):
+    def __init__(self, q, c):
         self.question = q
-        self.channel = i
+        self.channel = c
 
 
     '''
@@ -35,10 +38,9 @@ class Poll():
         if not self.active:
             raise ValueError("Poll is inactive!!!")
         if len(self.answers) >= 26:
-            raise IndexError('There are already 26 answers!')
-        track = char(ord(track+1))
-        self.answers.update({str(track) : [input, 0]})
-        print(self.answers)
+            raise IndexError("There are already 26 answers!")
+        self.track = self.track+1
+        self.answers.update({chr(self.track) : [input, 0]})
         
     
     '''
@@ -47,22 +49,25 @@ class Poll():
     @returns The poll's status in a string format
     '''
     def print_poll(self):
-        msg = '**' + self.question + '**\n'
-        for s in self.answers.items():
-            msg = msg + str(s + '\t' + self.answers[s] + '\n')
+        msg = "**" + self.question + "**\n"
 
-        return msg
+        if len(self.answers) == 0:
+            msg = msg + "*There are currently no answers to the poll*"
+
+        for s in self.answers.keys():
+            msg = msg + ":regional_indicator_" + s + ": - " + self.answers[s][0] + ". `Votes:` `" + str(self.answers[s][1]) + "`\n"
+
+        return str(msg)
 
 
     '''
     Adds a number for a vote
     '''
-    def vote(self, c):
-        c = c.upper()
-        if instanceof(str) and c == 1 and ord(c) >= 65 and ord(c) <= 90:
+    def vote(self, c): #TODO Emoji System and unique votes
+        c = c.lower()
+        if type(str) and ord(c) >= 97 and ord(c) <= 122:
             self.answers[c][1] += 1
-            return "Okay" #TODO After changing the ansers array to a dict, add a vote
         else: 
             raise ValueError("Not an answer!")
 
-    #TODO Save polls method
+    #TODO Save polls method?
