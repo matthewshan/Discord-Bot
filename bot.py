@@ -6,7 +6,9 @@ import random
 from poll import Poll
 
 class Bot(discord.Client):
-    polls = {}
+    def __init__(self):
+        discord.Client.__init__(self)
+        self.polls = {}
 
     #Helper Methods
     '''
@@ -98,7 +100,7 @@ class Bot(discord.Client):
             else:                 
                 if arg[1] == "new": #TODO: Check if a poll is active or not
                     question = " ".join(arg[2:len(message.content)-1])
-                    self.polls.update({message.channel.id:Poll(question, message.channel.id)})     
+                    self.polls[message.channel.id] = Poll(question, message.channel.id)  
                 else:  
                     try:
                         selected = self.polls[message.channel.id]

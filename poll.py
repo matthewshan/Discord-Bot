@@ -1,23 +1,4 @@
-class Poll():
-    #Question of the poll
-    question = '' 
-
-    #Keys: A-Z, Values: [Answer, Votes]
-    answers = {} 
-
-    #Channel ID
-    channel = None 
-
-    #Checks if the poll is active or not
-    active = True 
-
-    #This is the ASCII char before A
-    track = 96
-
-    #This is the message ID
-    id = None #TODO Unique Voting by channel
-
-
+class Poll(object):
     '''
     Constructor for the poll which takes question and channelID 
 
@@ -25,8 +6,23 @@ class Poll():
     @param c is the new self.channel
     '''
     def __init__(self, q, c):
+        #Question of the poll
         self.question = q
+
+        #Keys: A-Z, Values: [Answer, Votes]
+        self.answers = {} 
+
+        #Channel ID
         self.channel = c
+
+        #Checks if the poll is active or not
+        self.active = True 
+
+        #This is the ASCII char before A
+        self.track = 96
+
+        #This is the message ID
+        self.id = None #TODO Unique Voting by channel
 
 
     '''
