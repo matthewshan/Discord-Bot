@@ -24,9 +24,6 @@ class Bot(discord.Client):
             exit(1)
         return token
 
-    def get_poll(self, input):
-        return polls[input]
-
     #Core Methods#
     def reddit(self,sub):
             reddit = praw.Reddit(client_id='Lz8v84RHrHl_Jw',
@@ -61,6 +58,9 @@ class Bot(discord.Client):
                 zip) + ':\n```The temperature is ' + weatherTemp +
                 ' degrees fahrenheit\nCurrently the weather status is '
                 + weatherStatus + '```')
+
+        async def print_poll(self, poll):            
+            await self.send_message(message.channel, selected.print_poll())
                 
     #Discord API Methods#
     async def on_message(self, message):
@@ -122,7 +122,6 @@ class Bot(discord.Client):
 
                     elif arg[1] == "help": #TODO Needs a help menu
                         return ''
-                    await self.send_message(message.channel, selected.print_poll())
 
                 
 
