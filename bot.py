@@ -3,6 +3,7 @@ import json
 import requests
 import praw
 import random
+import pickle
 from poll import Poll
 
 class Bot(discord.Client):
@@ -23,6 +24,18 @@ class Bot(discord.Client):
             print('Failed to retrieve token from ' + filename)
             exit(1)
         return token
+        
+    #Save and load are untested.
+    def save_polls(self):
+        with open('polls.dat', 'wb') as file:
+            pickle.dump(self.polls, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def load_polls(self):
+        with open('polls.dat', 'rb') as file:
+            self.polls = pickle.load(file) 
+
+    async def print_poll(self, poll, channel): #TODO: Delete Old message   
+        await self.send_message(channel, poll.print_poll())
 
     #Core Methods#
     def reddit(self,sub):
@@ -59,8 +72,6 @@ class Bot(discord.Client):
                 ' degrees fahrenheit\nCurrently the weather status is '
                 + weatherStatus + '```')
 
-    async def print_poll(self, poll, channel): #TODO: Delete Old message   
-        await self.send_message(channel, poll.print_poll())
                 
     #Discord API Methods#
     async def on_message(self, message):
@@ -93,7 +104,7 @@ class Bot(discord.Client):
         elif arg[0] == "!poll":
             #arg[1] is the command
             #arg[2] and up are typically areguments for the operation
-            #TODO Delete user commands after input, easy nudging when there is no arguments, suggestions when things go wrong
+            #TODO Delete user commands after input
 
             if len(arg) < 2:
                 await self.send_message(message.channel, "Incorrect command usage...")
@@ -116,7 +127,6 @@ class Bot(discord.Client):
                         except IndexError:
                             await self.send_message(message.channel, "Max answers reached! No more answers can be added!")
                         
-                       
                     elif arg[1] == "nudge":
                         await self.print_poll(selected, message.channel)
 
@@ -132,7 +142,7 @@ class Bot(discord.Client):
                         except IndexError:
                             await self.send_message(message.channel, str(message.author.name + ", that is not a valid answer"))
                         
-                    elif arg[1] == "help": #TODO Needs a help menu
+                    elif arg[1] == "help": #TODO Needs a help menu https://stackoverflow.com/questions/33066383/print-doc-in-python-3-script
                         return ''
 
                 

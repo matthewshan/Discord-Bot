@@ -24,8 +24,8 @@ class Poll(object):
         #This is the ASCII char before A
         self.track = 96
 
-        #This is the message ID
-        self.id = None #TODO Unique Voting by channel
+        #This is the last printed poll sent
+        self.prev_msg = None
 
 
     '''
