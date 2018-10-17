@@ -59,8 +59,8 @@ class Bot(discord.Client):
                 ' degrees fahrenheit\nCurrently the weather status is '
                 + weatherStatus + '```')
 
-        async def print_poll(self, poll):            
-            await self.send_message(message.channel, selected.print_poll())
+    async def print_poll(self, poll, channel): #TODO: Delete Old message   
+        await self.send_message(channel, poll.print_poll())
                 
     #Discord API Methods#
     async def on_message(self, message):
@@ -100,7 +100,8 @@ class Bot(discord.Client):
             else:                 
                 if arg[1] == "new": #TODO: Check if a poll is active or not
                     question = " ".join(arg[2:len(message.content)-1])
-                    self.polls[message.channel.id] = Poll(question, message.channel.id)  
+                    self.polls[message.channel.id] = Poll(question, message.channel.id) 
+                    await self.print_poll(self.polls[message.channel.id], message.channel) 
                 else:  
                     try:
                         selected = self.polls[message.channel.id]
@@ -111,15 +112,26 @@ class Bot(discord.Client):
                         answer = " ".join(arg[2:len(message.content)-1])
                         try:
                             selected.add_answer(answer)
+                            await self.print_poll(selected, message.channel)
                         except IndexError:
                             await self.send_message(message.channel, "Max answers reached! No more answers can be added!")
+                        
                        
+                    elif arg[1] == "nudge":
+                        await self.print_poll(selected, message.channel)
+
                     elif arg[1] == "end":
                         selected.active = False
 
                     elif arg[1] == "vote":
-                        selected.vote(arg[2]) #TODO Error handling on this
-
+                        try:
+                            selected.vote(arg[2], message.author.id) 
+                            await self.print_poll(selected, message.channel) 
+                        except ValueError:
+                            await self.send_message(message.channel, str(message.author.name + " just tried to vote twice... Shame!"))
+                        except IndexError:
+                            await self.send_message(message.channel, str(message.author.name + ", that is not a valid answer"))
+                        
                     elif arg[1] == "help": #TODO Needs a help menu
                         return ''
 
