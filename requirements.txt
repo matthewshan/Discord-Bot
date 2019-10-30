@@ -1,0 +1,6 @@
+discord
+json
+requests
+praw
+random
+pickle
