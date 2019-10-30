@@ -1,5 +1,4 @@
 discord
-json
 requests
 praw
 random
