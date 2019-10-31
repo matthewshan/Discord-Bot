@@ -85,7 +85,10 @@ class Bot(discord.Client):
         arg = []
         arg = message.content.split(" ")
 
-        if arg[0] == "!reddit":
+        if arg[0] == "!help":
+            await self.send_message(message.channel, "Commands: \n `!reddit [sub]` - Retrieves a random hot post from the given sub. Defaults to /r/ProgrammerHumor\n`!weather [zipcode]` - Retrieves the weather from the given zip code. Defaults to Allendale.\n `!poll [argument]` - See `!poll help` for more information")
+
+        elif arg[0] == "!reddit":
             if len(arg) > 2: #
                 await self.send_message(message.channel,"Incorrect command usage.\nExample: `!reddit [*Subreddit*]`")
             elif len(arg) == 1:
@@ -108,19 +111,25 @@ class Bot(discord.Client):
             #TODO Delete user commands after input
 
             if len(arg) < 2:
-                await self.send_message(message.channel, "Incorrect command usage...")
-            else:                 
-                if arg[1] == "new": #TODO: Check if a poll is active or not
-                    question = " ".join(arg[2:len(message.content)-1])
-                    self.polls[message.channel.id] = Poll(question, message.channel.id) 
-                    await self.print_poll(self.polls[message.channel.id], message.channel) 
+                await self.send_message(message.channel, "Incorrect command usage... Try !poll help")
+            else:     
+                if arg[1] == "help": #TODO Needs a help menu https://stackoverflow.com/questions/33066383/print-doc-in-python-3-script
+                        await self.send_message(message.channel,"Poll Commands\n`new [question]` - creates a new poll in the channel\n`add [option]` - adds a new option to the current poll\n`nudge` - nudges the poll in the channel\n`vote [letter]` - vote for a letter\n`end` - ends the poll")            
+                elif arg[1] == "new": #TODO: Check if a poll is active or not
+                    if len(arg) < 3:
+                        await self.send_message(message.channel, "*Please enter a prompt for the poll*")
+                    else:
+                        question = " ".join(arg[2:len(message.content)-1])
+                        self.polls[message.channel.id] = Poll(question, message.channel.id) 
+                        await self.print_poll(self.polls[message.channel.id], message.channel) 
                 else:  
                     try:
                         selected = self.polls[message.channel.id]
-                    except TypeError:
+                    except TypeError and KeyError:
                         await self.send_message(message.channel, "That poll does not exist")
+                        return
 
-                    if arg[1] == "add" and selected.active == True:
+                    if arg[1] == "add" and selected.active:
                         answer = " ".join(arg[2:len(message.content)-1])
                         try:
                             selected.add_answer(answer)
@@ -128,13 +137,14 @@ class Bot(discord.Client):
                         except IndexError:
                             await self.send_message(message.channel, "Max answers reached! No more answers can be added!")
                         
-                    elif arg[1] == "nudge":
+                    elif arg[1] == "nudge" and selected.active:
                         await self.print_poll(selected, message.channel)
 
-                    elif arg[1] == "end":
+                    elif arg[1] == "end" and selected.active:
                         selected.active = False
+                        await self.send_message(message.channel, "Poll ended")
 
-                    elif arg[1] == "vote":
+                    elif arg[1] == "vote" and selected.active:
                         try:
                             selected.vote(arg[2], message.author.id) 
                             await self.print_poll(selected, message.channel) 
@@ -143,8 +153,7 @@ class Bot(discord.Client):
                         except IndexError:
                             await self.send_message(message.channel, str(message.author.name + ", that is not a valid answer"))
                         
-                    elif arg[1] == "help": #TODO Needs a help menu https://stackoverflow.com/questions/33066383/print-doc-in-python-3-script
-                        return ''
+                    
 
                 
 

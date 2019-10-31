@@ -49,7 +49,7 @@ class Poll(object):
         msg = "**" + self.question + "**\n"
 
         if len(self.answers) == 0:
-            msg = msg + "*There are currently no answers to the poll*"
+            msg = msg + "*There are currently no answers to the poll*\n Try `!poll add [answer]`"
 
         for s in self.answers.keys():
             msg = msg + ":regional_indicator_" + s + ": - " + self.answers[s][0] + ". `Votes:` `" + str(self.answers[s][1]) + "`\n"
