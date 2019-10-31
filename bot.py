@@ -21,15 +21,15 @@ class Bot(discord.Client):
     '''
     # Method to open text a return it in the form of a String
     '''
-    def get_token(self, filename):
-        try:
-            tokenFile = open('tokens/' + filename, 'r')
-            token = tokenFile.read().rstrip()
-            tokenFile.close()
-        except IOError:
-            print('Failed to retrieve token from ' + filename)
-            exit(1)
-        return token
+    # def get_token(self, filename):
+    #     try:
+    #         tokenFile = open('tokens/' + filename, 'r')
+    #         token = tokenFile.read().rstrip()
+    #         tokenFile.close()
+    #     except IOError:
+    #         print('Failed to retrieve token from ' + filename)
+    #         exit(1)
+    #     return token
         
     #Save and load are untested.
     def save_polls(self):
