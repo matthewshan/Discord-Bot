@@ -4,6 +4,7 @@ import requests
 import praw
 import random
 import pickle
+import os
 from poll import Poll
 
 class Bot(discord.Client):
@@ -12,6 +13,11 @@ class Bot(discord.Client):
         self.polls = {}
 
     #Helper Methods
+    def get_token(self):
+        token = os.environ['DISCORD_TOKEN']
+        if not token:
+            print('Token is empty')
+        return token
     '''
     # Method to open text a return it in the form of a String
     '''
