@@ -13,23 +13,17 @@ class Bot(discord.Client):
         self.polls = {}
 
     #Helper Methods
-    def get_token(self):
-        token = os.environ['DISCORD_TOKEN']
-        if not token:
-            print('Token is empty')
-        return token
     '''
     # Method to open text a return it in the form of a String
     '''
-    # def get_token(self, filename):
-    #     try:
-    #         tokenFile = open('tokens/' + filename, 'r')
-    #         token = tokenFile.read().rstrip()
-    #         tokenFile.close()
-    #     except IOError:
-    #         print('Failed to retrieve token from ' + filename)
-    #         exit(1)
-    #     return token
+    def get_token(self, name):
+        try:
+            token = os.environ[name]
+            return token
+        except Exception:
+            print('Failed to retrieve token from ' + name)
+            exit(1)
+        
         
     #Save and load are untested.
     def save_polls(self):
@@ -45,9 +39,9 @@ class Bot(discord.Client):
 
     #Core Methods#
     def reddit(self,sub):
-            reddit = praw.Reddit(client_id='Lz8v84RHrHl_Jw',
-                                 client_secret=self.get_token("reddit.txt"),
-                                 user_agent='Discord Bot')
+            reddit = praw.Reddit(client_id='f-vPBrJFobgQcg',
+                                 client_secret=self.get_token("REDDIT_TOKEN"),
+                                 user_agent='discord-bot')
             submission = random.choice(list(reddit.subreddit(sub).hot(limit=50)))
             if(not submission.over_18):
                 return ('From reddit.com/r/' + sub +':\n**' + submission.title + '**\n' + submission.url + '\n')
@@ -56,7 +50,7 @@ class Bot(discord.Client):
 
     def get_weather(self, zip):
         print('Accessing OpenWeatherMapAPI with token')
-        weatherToken = self.get_token('weather.txt')
+        weatherToken = self.get_token('WEATHER_TOKEN')
         weatherAddress = 'http://api.openweathermap.org/data/2.5/forecast?zip=' + str(
             zip) + ',us&APPID=' + weatherToken
 
@@ -82,6 +76,7 @@ class Bot(discord.Client):
     #Discord API Methods#
     async def on_message(self, message):
         #Note. Await stops other processes until this one is done
+        channel = message.channel 
 
         #print('Message from {0.author}: {0.content} from {0.channel}'.format(message))
         if message.author == self.user:
@@ -158,3 +153,6 @@ class Bot(discord.Client):
 
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
+
+    async def send_message(self, channel, msg):
+        await channel.send(msg)
