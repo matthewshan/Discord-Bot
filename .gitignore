@@ -1,5 +1,6 @@
 runLocal.py
-
+test.py
+TestSql.sql
 tokens/
 
 __pycache__/
