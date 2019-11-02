@@ -6,6 +6,7 @@ import random
 import pickle
 import os
 from poll import Poll
+from connection import QuotesConnection
 
 class Bot(discord.Client):
     def __init__(self):
@@ -85,10 +86,53 @@ class Bot(discord.Client):
         arg = []
         arg = message.content.split(" ")
 
-        if arg[0] == "!help":
-            await self.send_message(message.channel, "Commands: \n `!reddit [sub]` - Retrieves a random hot post from the given sub. Defaults to /r/ProgrammerHumor\n`!weather [zipcode]` - Retrieves the weather from the given zip code. Defaults to Allendale.\n `!poll [argument]` - See `!poll help` for more information")
+        
 
-        elif arg[0] == "!reddit":
+        if arg[0].lower() == "!help":
+            await self.send_message(message.channel, "Commands: \n `!reddit [sub]` - Retrieves a random hot post from the given sub. Defaults to /r/ProgrammerHumor\n`!weather [zipcode]` - Retrieves the weather from the given zip code. Defaults to Allendale.\n `!poll [argument]` - See `!poll help` for more information")
+        
+        elif arg[0].lower() == "!debug" and message.author.id == 186642747220951040:
+            if arg[1].lower() == "channelid":
+                await self.send_message(message.channel, str(message.channel.id))
+            elif arg[1].lower() == "serverid":
+                await self.send_message(message.channel, str(message.channel.guild.id))
+            elif arg[1].lower() == "users":
+                mes = "**Here are the users:\n**"
+                for i in message.channel.guild.members:
+                    mes += "Name -  " + i.name + "\tId - " + str(i.id) + "\n"
+                await self.send_message(message.channel, mes)
+                
+        elif arg[0].lower() == "!quotes" and message.channel.guild.id == 570800314702364713:
+            connection = QuotesConnection()
+            if arg[1].lower() == "help":
+                await self.send_message(message.channel, "Arguments:\n`check` - Lists the people in the database\n`list [Person]` - View the list of quotes given by a person\n`add [Quote] ~ [Person]` - Adds a quote to the database. **Important Note**: Make sure to have `~` as the delimitor between the quote and person\n")
+            elif arg[1].lower() == "check":
+                people = connection.get_people()
+                mes = "`"
+                mes += '`, `'.join(people)
+                mes += "`"
+                await self.send_message(message.channel, mes)
+            elif arg[1].lower() == "list":
+                person = ' '.join(arg[2:len(arg)])
+                quotes = connection.get_quotes(person)
+                if not quotes:
+                    await self.send_message(message.channel, "Person `" + str(person) + "` does not exist")
+                    return
+                mes = "**Quotes from** `" + str(person) + ":`\n> "
+                mes += '\n\n> '.join(quotes)
+                await self.send_message(message.channel, mes)
+               
+            elif arg[1].lower() == "add":
+                info = (' '.join(arg[2:len(arg)])).split("~")
+                if len(info) == 1:
+                    await self.send_message(message.channel, "Make sure to have `~` as the delimitor between the quote and person!!!")
+                    return
+                quote = info[0].strip()
+                person = info[1].strip()
+                mes = connection.insert_quote(quote, person, message.author.name)
+                await self.send_message(message.channel, mes)
+
+        elif arg[0].lower() == "!reddit":
             if len(arg) > 2: #
                 await self.send_message(message.channel,"Incorrect command usage.\nExample: `!reddit [*Subreddit*]`")
             elif len(arg) == 1:
@@ -98,14 +142,14 @@ class Bot(discord.Client):
 
             await self.send_message(message.channel,self.reddit(arg[1]))
         
-        elif arg[0] == "!weather":
+        elif arg[0].lower() == "!weather":
             if (len(arg) == 1):
                 await self.send_message(message.channel, self.get_weather(49401))
             elif (len(arg) == 2):
                 print(arg[1])
                 await self.send_message(message.channel, self.get_weather(arg[1]))
         
-        elif arg[0] == "!poll":
+        elif arg[0].lower() == "!poll":
             #arg[1] is the command
             #arg[2] and up are typically areguments for the operation
             #TODO Delete user commands after input
@@ -113,9 +157,9 @@ class Bot(discord.Client):
             if len(arg) < 2:
                 await self.send_message(message.channel, "Incorrect command usage... Try !poll help")
             else:     
-                if arg[1] == "help": #TODO Needs a help menu https://stackoverflow.com/questions/33066383/print-doc-in-python-3-script
+                if arg[1].lower() == "help": #TODO Needs a help menu https://stackoverflow.com/questions/33066383/print-doc-in-python-3-script
                         await self.send_message(message.channel,"Poll Commands\n`new [question]` - creates a new poll in the channel\n`add [option]` - adds a new option to the current poll\n`nudge` - nudges the poll in the channel\n`vote [letter]` - vote for a letter\n`end` - ends the poll")            
-                elif arg[1] == "new": #TODO: Check if a poll is active or not
+                elif arg[1].lower() == "new": #TODO: Check if a poll is active or not
                     if len(arg) < 3:
                         await self.send_message(message.channel, "*Please enter a prompt for the poll*")
                     else:
@@ -129,7 +173,7 @@ class Bot(discord.Client):
                         await self.send_message(message.channel, "That poll does not exist")
                         return
 
-                    if arg[1] == "add" and selected.active:
+                    if arg[1].lower() == "add" and selected.active:
                         answer = " ".join(arg[2:len(message.content)-1])
                         try:
                             selected.add_answer(answer)
@@ -137,14 +181,14 @@ class Bot(discord.Client):
                         except IndexError:
                             await self.send_message(message.channel, "Max answers reached! No more answers can be added!")
                         
-                    elif arg[1] == "nudge" and selected.active:
+                    elif arg[1].lower() == "nudge" and selected.active:
                         await self.print_poll(selected, message.channel)
 
-                    elif arg[1] == "end" and selected.active:
+                    elif arg[1].lower() == "end" and selected.active:
                         selected.active = False
                         await self.send_message(message.channel, "Poll ended")
 
-                    elif arg[1] == "vote" and selected.active:
+                    elif arg[1].lower() == "vote" and selected.active:
                         try:
                             selected.vote(arg[2], message.author.id) 
                             await self.print_poll(selected, message.channel) 
