@@ -86,7 +86,7 @@ class Bot(discord.Client):
         arg = []
         arg = message.content.split(" ")
 
-        
+        whitelist = [570800314702364713, 412316581171822622] #Server Ids that can use quotes 
 
         if arg[0].lower() == "!help":
             await self.send_message(message.channel, "Commands: \n `!reddit [sub]` - Retrieves a random hot post from the given sub. Defaults to /r/ProgrammerHumor\n`!weather [zipcode]` - Retrieves the weather from the given zip code. Defaults to Allendale.\n `!poll [argument]` - See `!poll help` for more information")
@@ -101,8 +101,15 @@ class Bot(discord.Client):
                 for i in message.channel.guild.members:
                     mes += "Name -  " + i.name + "\tId - " + str(i.id) + "\n"
                 await self.send_message(message.channel, mes)
+
+        elif arg[0].lower() == "!test" and message.author.id == 186642747220951040:
+            if arg[1].lower() == "embedded":
+                mes = discord.Embed(title="Test Embedded Message", description="Description", color=0xff0000)
+                mes.add_field(name="My first field", value="Hello World", inline=False)
+                await message.channel.send(embed=mes)
+
                 
-        elif arg[0].lower() == "!quotes" and message.channel.guild.id == 570800314702364713:
+        elif arg[0].lower() == "!quotes" and (message.channel.guild.id in whitelist):
             connection = QuotesConnection()
             if arg[1].lower() == "help":
                 await self.send_message(message.channel, "Arguments:\n`check` - Lists the people in the database\n`list [Person]` - View the list of quotes given by a person\n`add [Quote] ~ [Person]` - Adds a quote to the database. **Important Note**: Make sure to have `~` as the delimitor between the quote and person\n")
