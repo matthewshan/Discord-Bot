@@ -1,4 +1,4 @@
-import os
+import sys, traceback, os
 from datetime import datetime
 from pytz import timezone
 import sqlalchemy as sa
@@ -56,8 +56,9 @@ class QuotesConnection():
             self.session.add(quote_obj)   
             self.session.commit()
             self.session.flush()
-            return "Quote Sucessfully added!"
+            return "Quote Sucsessfully added!"
         except:
+            traceback.print_exc(file=sys.stdout)
             self.session.flush()
             return 'There was an issue inserting..'
 
