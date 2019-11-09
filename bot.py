@@ -1,11 +1,15 @@
-import discord, json, requests, praw, random, pickle, os, mimetypes, urllib.request, traceback, os
+import discord, sys, json, requests, praw, random, pickle, os, mimetypes, urllib.request, traceback, os
 from poll import Poll
+from pytz import timezone
+from datetime import datetime
 from connection import QuotesConnection
 
 class Bot(discord.Client):
     def __init__(self):
         discord.Client.__init__(self)
         self.polls = {}
+
+            
 
     #Helper Methods
     '''
@@ -37,11 +41,21 @@ class Bot(discord.Client):
         await channel.send(poll.print_poll())
 
     #Core Methods#
-    def reddit(self,sub):
+    async def meme_of_the_day(self):
+        time_zone = timezone('EST')
+        est_time = datetime.now(time_zone)
+        if est_time.hour == 7:
+            channel = self.get_channel(618635474470305793)
+            await channel.send("Meme of the day:", embed=self.reddit('ProgrammerHumor', True))
+
+    def reddit(self,sub,top=False):
             reddit = praw.Reddit(client_id='f-vPBrJFobgQcg',
                                  client_secret=self.get_token("REDDIT_TOKEN"),
                                  user_agent='discord-bot')
-            submission = random.choice(list(reddit.subreddit(sub).hot(limit=50)))
+            if not top:
+                submission = random.choice(list(reddit.subreddit(sub).hot(limit=50)))
+            else:  
+                submission = list(reddit.subreddit(sub).top('day'))[0]
             
             mes_title = 'From reddit.com/r/' + sub +':\n'
             mes_desc = '> By /u/' + submission.author.name + '\n '
@@ -276,6 +290,10 @@ class Bot(discord.Client):
 
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
+        try:
+            await self.meme_of_the_day()
+        except:
+            traceback.print_exc(file=sys.stdout)
 
     async def send_message(self, channel, msg):
         await channel.send(msg)
