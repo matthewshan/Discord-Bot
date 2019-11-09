@@ -3,7 +3,6 @@ from datetime import datetime
 from pytz import timezone
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
-import pyodbc
 
 Base = declarative_base()
 class Quote(Base):
