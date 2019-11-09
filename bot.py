@@ -68,11 +68,19 @@ class Bot(discord.Client):
         location = weatherJSON['city']['name'] + ', ' + weatherJSON['city'][
             'country']
 
-        return ('Here is the current weather in ' + location + ', ' + str(
-                zip) + ':\n```The temperature is ' + weatherTemp +
-                ' degrees fahrenheit\nCurrently the weather status is '
-                + weatherStatus + '```')
+        # mes = ('Here is the current weather in ' + location + ', ' + str(
+        #         zip) + ':\n```The temperature is ' + weatherTemp +
+        #         ' degrees fahrenheit\nCurrently the weather status is '
+        #         + weatherStatus + '```')
 
+        location_str = ('Here is the current weather in ' + location + ', ' + str(zip)
+        temperature_str = 'The temperature is' ' + weatherTemp + 'degrees fahrenheit'
+        mes = discord.Embed(title="Weather", description=location_str, color=0xff0000)
+        mes.add_field(name="Temperature", value=temperature_str, inline=False)
+        await message.channel.send(embed=mes)
+
+
+        return mes
                 
     #Discord API Methods#
     async def on_message(self, message):
