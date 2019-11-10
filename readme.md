@@ -16,7 +16,7 @@ You can also grab a random post from a given subreddit. If a subreddit is not sp
 
 **Usage:** ```!reddit [subreddit name]```
 
-![Weather Example](imgs/reddit.png)
+![Reddit Example](imgs/reddit.png)
 
 
 
