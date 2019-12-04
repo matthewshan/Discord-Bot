@@ -1,15 +1,15 @@
-import discord, sys, json, requests, praw, random, pickle, os, mimetypes, urllib.request, traceback, os
+import discord, sys, json, requests, praw, prawcore, random, pickle, os, mimetypes, urllib.request, traceback, os
 from poll import Poll
 from pytz import timezone
 from datetime import datetime
-from connection import QuotesConnection
+from quotes import QuotesConnection
 
 class Bot(discord.Client):
     def __init__(self):
         discord.Client.__init__(self)
+        self.connection = QuotesConnection()
         self.polls = {}
 
-            
 
     #Helper Methods
     '''
@@ -52,10 +52,19 @@ class Bot(discord.Client):
             reddit = praw.Reddit(client_id='f-vPBrJFobgQcg',
                                  client_secret=self.get_token("REDDIT_TOKEN"),
                                  user_agent='discord-bot')
-            if not top:
-                submission = random.choice(list(reddit.subreddit(sub).hot(limit=50)))
-            else:  
-                submission = list(reddit.subreddit(sub).top('day'))[0]
+            try:
+                if not top:
+                    posts = list(reddit.subreddit(sub).hot(limit=20))
+                else:  
+                    posts = list(reddit.subreddit(sub).top('day'))[0]
+            except prawcore.exceptions:
+                return discord.Embed(title='Uh oh... It looks likes like there are not pots from /r/' + sub, description='Try a different sub', color=0x333333)
+            print("List of posts: " + str(posts))  
+            if not posts:
+                return discord.Embed(title='Uh oh... It looks likes like there are not pots from /r/' + sub, description='Try a different sub', color=0x333333)
+                      
+            submission = random.choice(posts)  
+                
             
             mes_title = 'From reddit.com/r/' + sub +':\n'
             mes_desc = '> By /u/' + submission.author.name + '\n '
@@ -139,6 +148,8 @@ class Bot(discord.Client):
         
         status_desc = '> ' + weatherJSON['list'][0]['weather'][0]['description'].capitalize() + '.\n'
         
+        icon = icon.replace("n", "d")
+
         image_link = 'http://openweathermap.org/img/wn/' + icon + '@2x.png'
 
         mes = discord.Embed(title="Here's the current weather in:", description=location_title, color=color)
@@ -175,6 +186,8 @@ class Bot(discord.Client):
                 for i in message.channel.guild.members:
                     mes += "Name -  " + i.name + "\tId - " + str(i.id) + "\n"
                 await message.channel.send( mes)
+            elif arg[1].lower() == "help":
+                await message.channel.send("`channelID`, `serverID`, `users`")
 
         elif arg[0].lower() == "!test" and message.author.id == 186642747220951040:
             if arg[1].lower() == "embedded":
@@ -184,18 +197,17 @@ class Bot(discord.Client):
 
                 
         elif arg[0].lower() == "!quotes" and (message.channel.guild.id in whitelist):
-            connection = QuotesConnection()
             if arg[1].lower() == "help":
                 await message.channel.send( "Arguments:\n`check` - Lists the people in the database\n`list [Person]` - View the list of quotes given by a person\n`add [Quote] ~ [Person]` - Adds a quote to the database. **Important Note**: Make sure to have `~` as the delimitor between the quote and person\n")
             elif arg[1].lower() == "check":
-                people = connection.get_people()
+                people = self.connection.get_people()
                 mes = "`"
                 mes += '`, `'.join(people)
                 mes += "`"
                 await message.channel.send( mes)
             elif arg[1].lower() == "list":
                 person = ' '.join(arg[2:len(arg)])
-                quotes = connection.get_quotes(person)
+                quotes = self.connection.get_quotes(person)
                 if not quotes:
                     await message.channel.send( "Person `" + str(person) + "` does not exist")
                     return
@@ -210,8 +222,8 @@ class Bot(discord.Client):
                     return
                 quote = info[0].strip()
                 person = info[1].strip()
-                mes = connection.insert_quote(quote, person, message.author.name)
-                await message.channel.send( mes)
+                mes = self.connection.insert_quote(quote, person, message.author.id)
+                await message.channel.send(mes)
 
         elif arg[0].lower() == "!reddit":
             if len(arg) > 2: #
