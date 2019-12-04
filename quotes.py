@@ -36,7 +36,6 @@ class QuotesConnection():
         self.session.flush()
         return people
         
-
     def get_quotes(self, person):
         self.create_session()
         quotes = []
@@ -55,7 +54,7 @@ class QuotesConnection():
             self.session.add(quote_obj)   
             self.session.commit()
             self.session.flush()
-            return "Quote Sucsessfully added!"
+            return "Quote Successfully added!"
         except:
             traceback.print_exc(file=sys.stdout)
             self.session.flush()
