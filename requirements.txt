@@ -2,5 +2,6 @@ discord
 requests
 praw
 sqlalchemy
+cython
 pymssql<3.0
 pytz
