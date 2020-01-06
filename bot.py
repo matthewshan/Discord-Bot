@@ -171,7 +171,7 @@ class Bot(discord.Client):
         arg = []
         arg = message.content.split(" ")
 
-        whitelist = [570800314702364713, 412316581171822622] #Server Ids that can use quotes 
+        whitelist = [570800314702364713, 412316581171822622, 572224322014412830] #Server Ids that can use quotes 
 
         if arg[0].lower() == "!help":
             await message.channel.send( "Commands: \n `!reddit [sub]` - Retrieves a random hot post from the given sub. Defaults to /r/ProgrammerHumor\n`!weather [zipcode]` - Retrieves the weather from the given zip code. Defaults to Allendale.\n `!poll [argument]` - See `!poll help` for more information")
