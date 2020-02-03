@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 class Quote(Base):
-    __tablename__ = 'CustardQuotes'
+    __tablename__ = 'quotes'
 
     ID = sa.Column(sa.String, primary_key=True)
     Quote = sa.Column(sa.String)

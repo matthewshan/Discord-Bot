@@ -212,8 +212,15 @@ class Bot(discord.Client):
                     await message.channel.send( "Person `" + str(person) + "` does not exist")
                     return
                 mes = "**Quotes from** `" + str(person) + ":`\n> "
-                mes += '\n\n> '.join(quotes)
-                await message.channel.send( mes)
+                char_count = len(mes)
+                for quote in quotes:
+                    char_count += len(quote) + 4
+                    if char_count > 500:
+                        await message.channel.send(mes)
+                        mes = "**Quotes from** `" + str(person) + ":`\n> "
+                        char_count = len(mes)
+                    mes += '\n\n> '.join(quotes) #Replace this line
+                await message.channel.send(mes)
                
             elif arg[1].lower() == "add":
                 info = (' '.join(arg[2:len(arg)])).split("~")
@@ -221,7 +228,7 @@ class Bot(discord.Client):
                     await message.channel.send( "Make sure to have `~` as the delimitor between the quote and person!!!")
                     return
                 quote = info[0].strip()
-                person = info[1].strip()
+                person = info[1].strip()    
                 mes = self.connection.insert_quote(quote, person, message.author.id)
                 await message.channel.send(mes)
 
