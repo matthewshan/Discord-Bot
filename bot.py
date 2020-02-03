@@ -211,16 +211,18 @@ class Bot(discord.Client):
                 if not quotes:
                     await message.channel.send( "Person `" + str(person) + "` does not exist")
                     return
-                mes = "**Quotes from** `" + str(person) + ":`\n> "
-                char_count = len(mes)
+                mes = "**Quotes from** `" + str(person) + "`:" 
+                char_length = len(mes)
                 for quote in quotes:
-                    char_count += len(quote) + 4
-                    if char_count > 500:
+                    temp = "\n-\n> " + quote.replace("\n", "\n> ")
+                    char_length += len(temp)
+                    if char_length > 2000:
                         await message.channel.send(mes)
-                        mes = "**Quotes from** `" + str(person) + ":`\n> "
-                        char_count = len(mes)
-                    mes += '\n\n> '.join(quotes) #Replace this line
-                await message.channel.send(mes)
+                        mes = ""
+                        char_length = len(temp)
+                    mes += temp
+                    
+                await message.channel.send(mes) #Turn this into an embedded message eventually
                
             elif arg[1].lower() == "add":
                 info = (' '.join(arg[2:len(arg)])).split("~")
