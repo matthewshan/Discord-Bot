@@ -9,7 +9,7 @@ Base = declarative_base()
 class Quote(Base):
     __tablename__ = 'quotes'
 
-    ID = sa.Column(sa.String, primary_key=True)
+    ID = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     Quote = sa.Column(sa.String)
     Person = sa.Column(sa.String)
     Author = sa.Column(sa.String)
@@ -46,20 +46,20 @@ class QuotesConnection():
         self.session.flush()
         return quotes
 
-    def get_next_id(self):
-        self.create_session()
-        #result = self.session.query(Quote.ID).max()
-        for i in self.session.query(sa.sql.functions.max(Quote.ID)):
-            result = i
-        self.session.flush()
-        return result+1
+    # def get_next_id(self):
+    #     self.create_session()
+    #     #result = self.session.query(Quote.ID).max()
+    #     for i in self.session.query(sa.sql.functions.max(Quote.ID)):
+    #         result = i[0]
+    #     self.session.flush()
+    #     return result+1
 
     def insert_quote(self, quote, person, author):
         time_zone = timezone('EST')
         est_time = datetime.now(time_zone)
         time_str = est_time.strftime("%Y-%m-%d")
         try:
-            quote_obj = Quote(ID=self.get_next_id(), Quote=quote, Person=person, Author=author, DateAdded=time_str, Source='Discord')
+            quote_obj = Quote(Quote=quote, Person=person, Author=author, DateAdded=time_str, Source='Discord')
             self.create_session()
             self.session.add(quote_obj)   
             self.session.commit()
