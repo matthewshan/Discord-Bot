@@ -1,12 +1,12 @@
 runLocal.py
 test.py
+
 TestSql.sql
-tokens/
+
+*.pyc
+
 
 __pycache__/
-
 .idea/
-
 .vscode/
-
 .vs/
