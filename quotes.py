@@ -69,8 +69,3 @@ class QuotesConnection():
             traceback.print_exc(file=sys.stdout)
             self.session.flush()
             return 'There was an issue inserting..'
-
-# conn = QuotesConnection() 
-# print(conn.get_quotes("Random Person"))
-# print(conn.insert_quote("This is a dummy quote!", "Random Person", "Matthew Shan"))
-# print(conn.insert_quote("This is a dummy quote2!", "Random Person", "Matthew Shan"))
