@@ -33,7 +33,7 @@ class QuotesConnection():
         time_zone = timezone('EST')
         est_time = datetime.now(time_zone)
         time_str = est_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
-        headers = {'Content-type': 'application/json', 'ApiKey': os.environ['API_KEY']}
+        headers = {'Content-Type': 'application/json', 'ApiKey': os.environ['API_KEY']}
         body = json.dumps({
             "quote": quote,
             "person": person,
@@ -41,6 +41,7 @@ class QuotesConnection():
             "dateAdded": time_str,
             "source": "Discord"
         })
+        print(str(body))
         response = requests.post(self.base_address + 'new', data=body, headers=headers)
         if response.status_code != 200:
             return 'There was an issue inserting... (Status Code: ' + str(response.status_code) + ')'

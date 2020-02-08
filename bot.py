@@ -229,7 +229,7 @@ class Bot(discord.Client):
                 if len(info) == 1:
                     await message.channel.send( "Make sure to have `~` as the delimitor between the quote and person!!!")
                     return
-                quote = info[0].split(" ")
+                quote = info[0]
                 person = info[1].strip()    
                 mes = self.connection.insert_quote(quote, person, message.author.id)
                 await message.channel.send(mes)
