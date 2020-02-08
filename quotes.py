@@ -20,7 +20,7 @@ class QuotesConnection():
 
     def merge_people(self, old_list, new_person):
         params = {'newName': new_person}
-        headers = {'Content-type': 'application/json', 'ApiKey': os.environ['API_KEY']}
+        headers = {'Content-type': 'text/json', 'ApiKey': os.environ['API_KEY']}
         body = "[\""
         body += '", \"'.join(old_list)
         body += "\"]"
