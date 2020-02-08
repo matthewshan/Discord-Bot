@@ -10,3 +10,5 @@ __pycache__/
 .idea/
 .vscode/
 .vs/
+
+quotes2.py

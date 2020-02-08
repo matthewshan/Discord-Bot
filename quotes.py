@@ -1,6 +1,53 @@
-import sys, traceback, os
+import sys, traceback, os, requests, json
 from datetime import datetime
 from pytz import timezone
+
+class QuotesConnection():
+    def __init__(self):
+        self.base_address = "https://custardquotesapi.azurewebsites.net/Quotes/"
+
+    def get_people(self):
+        headers = {'ApiKey': os.environ['API_KEY']}
+        result = requests.get(self.base_address + 'allNames', headers=headers).json()
+        return result
+
+    def get_quotes(self, person):
+        params = {'name': person}
+        headers = {'ApiKey': os.environ['API_KEY']}
+        response = requests.get(self.base_address + 'byName', params=params, headers=headers).json()
+        result = [entry['quote'] for entry in response]
+        return result
+
+    def merge_people(self, old_list, new_person):
+        params = {'newName': new_person}
+        headers = {'Content-type': 'application/json', 'ApiKey': os.environ['API_KEY']}
+        body = "[\""
+        body += '", \"'.join(old_list)
+        body += "\"]"
+        response = requests.put(self.base_address + 'merge', params=params, data=body, headers=headers)
+        if response.status_code != 200:
+            return 'There was an issue merging... (Status Code: ' + str(response.status_code) + ')'
+        return "Merge Successfully!"
+
+    def insert_quote(self, quote, person, author):
+        time_zone = timezone('EST')
+        est_time = datetime.now(time_zone)
+        time_str = est_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+        headers = {'Content-type': 'application/json', 'ApiKey': os.environ['API_KEY']}
+        body = json.dumps({
+            "quote": quote,
+            "person": person,
+            "author": str(author),
+            "dateAdded": time_str,
+            "source": "Discord"
+        })
+        response = requests.post(self.base_address + 'new', data=body, headers=headers)
+        if response.status_code != 200:
+            return 'There was an issue inserting... (Status Code: ' + str(response.status_code) + ')'
+        return "Quote Successfully added!"
+
+
+"""
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -46,14 +93,6 @@ class QuotesConnection():
         self.session.flush()
         return quotes
 
-    # def get_next_id(self):
-    #     self.create_session()
-    #     #result = self.session.query(Quote.ID).max()
-    #     for i in self.session.query(sa.sql.functions.max(Quote.ID)):
-    #         result = i[0]
-    #     self.session.flush()
-    #     return result+1
-
     def insert_quote(self, quote, person, author):
         time_zone = timezone('EST')
         est_time = datetime.now(time_zone)
@@ -69,3 +108,4 @@ class QuotesConnection():
             traceback.print_exc(file=sys.stdout)
             self.session.flush()
             return 'There was an issue inserting..'
+"""

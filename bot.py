@@ -233,6 +233,15 @@ class Bot(discord.Client):
                 person = info[1].strip()    
                 mes = self.connection.insert_quote(quote, person, message.author.id)
                 await message.channel.send(mes)
+            elif arg[1].lower() == "merge":
+                temp = (' '.join(arg[2:len(arg)])).split(">")
+                if len(temp) != 2:
+                    await message.channel.send("Invalid Syntax. Try: `!quotes merge [name1] [name2] > [new_name]")
+                old_names = temp[0].split(" ")
+                new_name = temp[1]
+                mes = self.connection.merge_people(old_names, new_name)
+                await message.channel.send(mes)
+
 
         elif arg[0].lower() == "!reddit":
             if len(arg) > 2: #
