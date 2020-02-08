@@ -229,7 +229,7 @@ class Bot(discord.Client):
                 if len(info) == 1:
                     await message.channel.send( "Make sure to have `~` as the delimitor between the quote and person!!!")
                     return
-                quote = info[0].strip()
+                quote = info[0].split(" ")
                 person = info[1].strip()    
                 mes = self.connection.insert_quote(quote, person, message.author.id)
                 await message.channel.send(mes)
@@ -237,8 +237,8 @@ class Bot(discord.Client):
                 temp = (' '.join(arg[2:len(arg)])).split(">")
                 if len(temp) != 2:
                     await message.channel.send("Invalid Syntax. Try: `!quotes merge [name1] [name2] > [new_name]")
-                old_names = temp[0].split(" ")
-                new_name = temp[1]
+                old_names = temp[0].strip().split(" ")
+                new_name = temp[1].strip()
                 mes = self.connection.merge_people(old_names, new_name)
                 await message.channel.send(mes)
 
