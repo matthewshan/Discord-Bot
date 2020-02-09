@@ -1,6 +1,4 @@
 discord
 requests
 praw
-sqlalchemy
-pymssql<3.0
 pytz
