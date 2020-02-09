@@ -221,9 +221,7 @@ class Bot(discord.Client):
                         mes = ""
                         char_length = len(temp)
                     mes += temp
-                    
                 await message.channel.send(mes) #Turn this into an embedded message eventually
-               
             elif arg[1].lower() == "add":
                 info = (' '.join(arg[2:len(arg)])).split("~")
                 if len(info) == 1:
@@ -236,8 +234,10 @@ class Bot(discord.Client):
             elif arg[1].lower() == "merge":
                 temp = (' '.join(arg[2:len(arg)])).split(">")
                 if len(temp) != 2:
-                    await message.channel.send("Invalid Syntax. Try: `!quotes merge [name1] [name2] > [new_name]")
-                old_names = temp[0].strip().split(" ")
+                    await message.channel.send("Invalid Syntax. Try: `!quotes merge [name1], [name2] > [new_name]")
+                old_names = temp[0].split(",")
+                for i in range(0, len(old_names)):
+                    old_names[i] = old_names[i].strip()
                 new_name = temp[1].strip()
                 mes = self.connection.merge_people(old_names, new_name)
                 await message.channel.send(mes)
