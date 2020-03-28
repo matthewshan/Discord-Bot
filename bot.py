@@ -171,6 +171,9 @@ class Bot(discord.Client):
         arg = []
         arg = message.content.split(" ")
 
+        if message.author.id == 691687543829168140:
+            await message.channel.send("Mary did you know?")
+
         whitelist = [570800314702364713, 412316581171822622, 572224322014412830] #Server Ids that can use quotes 
 
         if arg[0].lower() == "!help":
