@@ -173,6 +173,8 @@ class Bot(discord.Client):
 
         if message.author.id == 691687543829168140:
             await message.channel.send("Mary did you know?")
+        elif message.author.id == 691689285094604841:
+            await message.channel.send("Hey Chris, do you have Java?")
 
         whitelist = [570800314702364713, 412316581171822622, 572224322014412830] #Server Ids that can use quotes 
 
