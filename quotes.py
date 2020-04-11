@@ -1,31 +1,35 @@
 import sys, traceback, os, requests, json
 from datetime import datetime
 from pytz import timezone
+import time
 
 class QuotesConnection():
     def __init__(self):
         self.base_address = "https://custardquotesapi.azurewebsites.net/Quotes/"
+        self.last_ping = time.time()
 
     def get_people(self):
         headers = {'ApiKey': os.environ['API_KEY']}
-        result = requests.get(self.base_address + 'allNames', headers=headers).json()
+        params = {'groupID': 1}
+        result = requests.get(self.base_address + 'allNames', params=params, headers=headers).json()
         return result
 
     def get_quotes(self, person):
-        params = {'name': person}
+        params = {'name': person, 'groupID': 1}
         headers = {'ApiKey': os.environ['API_KEY']}
         response = requests.get(self.base_address + 'byName', params=params, headers=headers).json()
         result = [entry['quote'] for entry in response]
         return result
 
     def merge_people(self, old_list, new_person):
-        params = {'newName': new_person}
+        params = {'newName': new_person, 'groupId': 1}
         headers = {'Content-type': 'text/json', 'ApiKey': os.environ['API_KEY']}
         body = "[\""
         body += '", \"'.join(old_list)
         body += "\"]"
         response = requests.put(self.base_address + 'merge', params=params, data=body, headers=headers)
         if response.status_code != 200:
+            print("Error: " + response.status_code + " \nBody:" + response.text)
             return 'There was an issue merging... (Status Code: ' + str(response.status_code) + ')'
         return "Merge Successfully!"
 
@@ -39,13 +43,21 @@ class QuotesConnection():
             "person": person,
             "author": str(author),
             "dateAdded": time_str,
-            "source": "Discord"
+            "source": "Discord",
+            "groupId": 1
         })
         print(str(body))
         response = requests.post(self.base_address + 'new', data=body, headers=headers)
         if response.status_code != 200:
+            print("Error: " + response.status_code + " \nBody:" + response.text)
             return 'There was an issue inserting... (Status Code: ' + str(response.status_code) + ')'
         return "Quote Successfully added!"
+
+    def ping(self):
+        if(self.last_ping - time.time() > 600):
+            self.last_ping = time.time()
+            response = requests.head(self.base_address)
+            return response.status_code
 
 
 """

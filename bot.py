@@ -8,6 +8,7 @@ class Bot(discord.Client):
     def __init__(self):
         discord.Client.__init__(self)
         self.connection = QuotesConnection()
+        self.connection.ping()
         self.polls = {}
 
 
@@ -163,6 +164,7 @@ class Bot(discord.Client):
     async def on_message(self, message):
         #Note. Await stops other processes until this one is done
         channel = message.channel 
+        self.connection.ping()
 
         #print('Message from {0.author}: {0.content} from {0.channel}'.format(message))
         if message.author == self.user:
@@ -170,11 +172,6 @@ class Bot(discord.Client):
 
         arg = []
         arg = message.content.split(" ")
-
-        if message.author.id == 691687543829168140:
-            await message.channel.send("Mary did you know?")
-        elif message.author.id == 691689285094604841:
-            await message.channel.send("Hey Chris, do you have Java?")
 
         whitelist = [570800314702364713, 412316581171822622, 572224322014412830] #Server Ids that can use quotes 
 
@@ -203,7 +200,11 @@ class Bot(discord.Client):
                 
         elif arg[0].lower() == "!quotes" and (message.channel.guild.id in whitelist):
             if arg[1].lower() == "help":
-                await message.channel.send( "Arguments:\n`check` - Lists the people in the database\n`list [Person]` - View the list of quotes given by a person\n`add [Quote] ~ [Person]` - Adds a quote to the database. **Important Note**: Make sure to have `~` as the delimitor between the quote and person\n")
+                help_msg = "Arguments:\n`check` - Lists the people in the database\n"
+                help_msg += "`list [Person]` - View the list of quotes given by a person\n"
+                help_msg += "`add [Quote] ~ [Person]` - Adds a quote to the database. **Important Note**: Make sure to have `~` as the delimitor between the quote and person\n"
+                help_msg += "`merge [Old] > [New] - Used for misspelled names. Merges old name quotes into a new name.\n"
+                await message.channel.send( )
             elif arg[1].lower() == "check":
                 people = self.connection.get_people()
                 mes = "`"
